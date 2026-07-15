@@ -28,15 +28,44 @@ scene.rx_array = PlanarArray(num_rows=8, num_cols=8,
 
 tx = Transmitter(name="tx",
                  position=[0,0,0],
-                 display_radius=2)
+                 display_radius=0.5)
 scene.add(tx)
 
 # Place scene objects here:
 
+# main loop, iterating over rx positions
+# for x in np.linspace(-5,5,3).tolist():
+#   for y in np.linspace(-5,5,3).tolist():
+#     for z in np.linspace(-5,5,3).tolist():
 
+#       rx = Receiver(name=f"rx_{x*10}_{y*10}_{z*10}",
+#                        position=[x,y,z],
+#                        display_radius=0.2)
+#       scene.add(rx)
+
+for x in range(-50,50,25):
+    for y in range(-50,50,25):
+        for z in range(-50,50,25):
+            print(f"rx_{x}_{y}_{z}")
+            rx = Receiver(name=f"rx_{x}_{y}_{z}",
+                            position=[x/10,y/10,z/10],
+                            display_radius=0.1)
+            scene.add(rx)
+
+p_solver  = PathSolver()
+
+# Compute propagation paths
+paths = p_solver(scene=scene,
+                 max_depth=5,
+                 los=True,
+                 specular_reflection=True,
+                 diffuse_reflection=False,
+                 refraction=True,
+                 synthetic_array=False,
+                 seed=41)
 
 # scene preview
-cam = Camera(position=[-250,250,150], look_at=[0,0,0]) #TODO: set camera position.
+cam = Camera(position=[-20,20,15], look_at=[0,0,0]) #TODO: set camera position.
 
 save_directory = "output/"+scene_name
 try:
@@ -52,4 +81,12 @@ img_plt = plt.imshow(preview_img)
 plt.show()
 
 
-# main loop, iterating over rx positions
+
+
+# frequencies = subcarrier_frequencies(1024, 30e3), creates a list from scene frequency as center frequency
+
+
+cfr = paths.cfr(frequencies=[scene.frequency],
+                   normalize=False,
+                   normalize_delays=False,
+                   out_type="numpy")
