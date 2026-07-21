@@ -76,7 +76,7 @@ paths = p_solver(scene=scene,
                  specular_reflection=True,
                  diffuse_reflection=False,
                  refraction=True,
-                 synthetic_array=True,
+                 synthetic_array=False,
                  seed=41)
 
 # save the outputs
@@ -85,7 +85,9 @@ paths = p_solver(scene=scene,
 save_directory = "output/"+scene_name
 try:
     os.mkdir(save_directory)
-except OSError as e:
+except FileExistsError:
+    print(save_directory + " exists")
+except:
     print("mkdir:", e)
 
 np.save(save_directory+"/cr_real", np.array(paths.a[0][:,:,0,0,0]))
@@ -117,6 +119,14 @@ print("----------")
 print(paths.a[1][:,:,0,0,0])
 
 
+# paths.targets 
+#is there a guarantee for which matches up with which channel response?
+
+# array ordering is a little different between mitsuba and numpy
+rx_pos = np.reshape(np.array(paths.targets).transpose(), (rx_num, -1, 3))
+np.save(save_directory+"/rx_pos", rx_pos)
+
+# scene.targets()
 
 #sample of objects interacted with:
 # paths.objects[:,:5,:5,0,0,0]

@@ -1,1 +1,8 @@
+  # for x in np.linspace(x_min, x_max, ).tolist():
+  #   for y in np.linspace(y_min, y_max, 3).tolist():
+  #     for z in np.linspace(z_min, z_max, 3).tolist():
 
+
+
+# cr = np.array(cfr[0][:,:,0,0,0,0]) + 1j * np.array(cfr[1][:,:,0,0,0,0])
+# cr = cfr[0][:,:,0,0,0,0] + 1j*cfr[1][:,:,0,0,0,0]
