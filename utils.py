@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from sionna.rt import load_scene, PlanarArray, Transmitter, Receiver, Camera,\
+                      PathSolver, RadioMapSolver, subcarrier_frequencies
 
 # creates array of coordinates
 def rx_pos_space_filling(x_min, x_max, y_min, y_max, z_min, z_max, step=0.5):
@@ -29,6 +32,22 @@ def unit_sph_to_cart(theta, phi):
     z = np.cos(theta)
     return [x, y, z]
 
+def draw_cir(paths, rx_num, ant_num):
+  #stolen from sionna-rt tutorial https://nvlabs.github.io/sionna/rt/tutorials/Introduction.html
+    a, tau = paths.cir(normalize_delays=True, out_type="numpy")
+    # Shape: [num_rx, num_rx_ant, num_tx, num_tx_ant, num_paths]
+    t = tau[rx_num, ant_num, 0,0,:]/1e-9 # Scale to ns
+    # Shape: [num_rx, num_rx_ant, num_tx, num_tx_ant, num_paths, num_time_steps]
+    cr = a[rx_num, ant_num, 0,0,:,0]
+    a_abs = np.abs(cr)
+    a_max = np.max(a_abs)
+    print(f"paths: {a_abs.shape}, first path: {cr}")
+    plt.figure()
+    plt.title("Channel impulse response")
+    plt.stem(t, a_abs)
+    plt.xlabel(r"$\tau$ [ns]")
+    plt.ylabel(r"$|a|$");
+    plt.show()
 
 if __name__ == "__main__":
   arr = rx_pos_space_filling(-1,1,-1,1,-1,1,step=0.5)
